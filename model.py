@@ -1,7 +1,11 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm import sessionmaker
+
+import datetime
 
 ENGINE = None
 Session = None
@@ -29,26 +33,28 @@ class Movie(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(64))
-    released_at = Column(Integer, nullable=True)
+    released_at = Column(DateTime, nullable=True)
     imdb_url = Column(String(128), nullable=True)
 
-    def __init__(self, name=None, released_at=None, imdb_url=None):
-        self.name = name
-        self.released_at = released_at
-        self.imdb_url = imdb_url
+    # def __init__(self, name=None, released_at=None, imdb_url=None):
+    #     self.name = name
+    #     self.released_at = released_at
+    #     self.imdb_url = imdb_url
 
 class Rating(Base):
     __tablename__ = "ratings"
 
     id = Column(Integer, primary_key=True)
     movie_id = Column(Integer)
-    user_id = Column(Integer)
+    user_id = Column(Integer, ForeignKey('users.id'))
     rating = Column(Integer)
 
-    def __init__(self, movie_id=None, user_id=None, rating=None):
-        self.movie_id = movie_id
-        self.user_id = user_id
-        self.rating = rating
+    user = relationship("User", backref=backref("ratings", order_by=id))
+
+    # def __init__(self, movie_id=None, user_id=None, rating=None):
+    #     self.movie_id = movie_id
+    #     self.user_id = user_id
+    #     self.rating = rating
 
 ### End class declarations
 def connect():
