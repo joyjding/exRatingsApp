@@ -1,26 +1,60 @@
 <html>
     <head>
         <title>Judgement</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Bootstrap -->
+        <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
+    <link href="/static/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
     </head>
     <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="/">Ratings</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active"><a href="/movies">Movies</a></li>
+              <li><a href="/user">Critics</a></li>
+              {% if username %}
+                <li><a href="/user?user_id={{username}}">My Movies</a></li>
+              {% endif %}
+            </ul>
+            {% if username %}
+            <form method="POST" action="/logout" class="navbar-form pull-right">
+                <a href="/user?user_id={{username}}">You are logged in as {{ username }}</a>
+                <button type="submit" class="btn">Log Out</button>
+            </form>
+            {% else %}
+            <form class="navbar-form pull-right" action="/user" method="POST">
+                {% if wrong_password==True%}
+                    <div style="color:red">Wrong Password. Try again :)</div>
+                {% endif %}
+              <input class="span2" type="text" placeholder="Email" name="email">
+              <input class="span2" type="password" placeholder="Password" name="password">
+              <button type="submit" class="btn">Sign in</button>
+            </form>
+            {% endif %}
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
         <h1>Movie Ratings for Dogs</h1>
-        {% if username %}
-            <p> You are logged in as {{ username }} </p>
-            <form method="POST" action="/logout">
-                <input type="submit" value="Log Out">
-            </form>
-        {% else %}
-            <p> You are not logged in </p>
-            <form method="POST" action="/user">
-                <label>Email</label><input type="text" name="email">
-                <label>Password</label><input type="password" name="password">
-                <input type="submit">
-            </form>
-        {% endif %}
-        {% if wrong_password==True%}
-            <p>Wrong Password. Try again :)</p>
-        {% endif %}
 
         {% block content %}{% endblock %}
+    </div>
+        <script src="http://code.jquery.com/jquery.js"></script>
+        <script src="/static/bootstrap/js/bootstrap.min.js"></script>
     </body> 
 </html>

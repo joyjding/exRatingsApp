@@ -45,6 +45,13 @@ class Movie(Base):
             return "No ratings yet for this movie."
         return rating_sum/num
 
+    def get_ratings_distribution(self):
+        ratings_count = [0, 0, 0, 0, 0]
+        for r in self.ratings:
+            ratings_count[r.rating-1] += 1
+        return ratings_count
+
+
 
 class Rating(Base):
     __tablename__ = "ratings"
@@ -61,6 +68,14 @@ class Rating(Base):
 ### End class declarations
 
 def add_new_rating(user_id, movie_id, rating):
+    # check if user has rated this movie before
+    r = session.query(Rating).filter_by(user_id=user_id, movie_id=movie_id).first()
+    if r:
+        r.rating = rating
+        session.commit()
+        print "ALREADY HAVE A RATING\n\n"
+        return
+    # create new rating if user has not rated the movie
     r = Rating(movie_id=movie_id, rating=rating, user_id=user_id)
     session.add(r)
     session.commit()
@@ -72,7 +87,7 @@ def add_new_user(email, pw, age=None, zipcode=None):
     session.commit()
 
 def check_login(email, pw):
-    u = session.query(User).filter_by(email=email, password=pw).one()
+    u = session.query(User).filter_by(email=email, password=pw).first()
     if u:
         return u.id
     return None

@@ -65,7 +65,17 @@ def show_all_movies():
 @app.route('/movies/<movie_name>')
 def show_movie(movie_name):
     movie = model.session.query(model.Movie).filter_by(name=movie_name).one()
-    return render_template("movie.html", movie=movie, username=session.get('username'))
+    user_session = session.get('username')
+    user_rating = None
+    user = None
+    if user_session:
+        user = model.session.query(model.User).get(user_session)
+        for r in user.ratings:
+            if r.movie_id == movie.id:
+                user_rating = r
+
+
+    return render_template("movie.html", movie=movie, user=user, username=user_session, user_rating=user_rating)
 
 app.secret_key = "anoraworjj8tj93498q36hui63nkatojht825q4"
 

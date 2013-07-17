@@ -3,7 +3,7 @@
 {% block content %}
 <h3>Movie ratings by user #{{ user.id }} </h3>
 {% for r in user.ratings %}
-   {{r.movie.name}} : {{r.rating}}<br>
+   <a href="/movies/{{r.movie.name}}">{{r.movie.name}}</a> : {{r.rating}}<br>
 {% endfor %}
 
 {% endblock %}
