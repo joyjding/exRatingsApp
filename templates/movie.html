@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3>{{ movie.name }}</h3>
+<h4> Average Rating: {{ movie.get_avg_rating() }}</h4>
+
+<form method="POST" action="/new_rating">
+    <input type="hidden" name="movie_id" value="{{ movie.id }}">
+    <input type="radio" name="rating_box" value="1">1<br>
+    <input type="radio" name="rating_box" value="2">2<br>
+    <input type="radio" name="rating_box" value="3">3<br>
+    <input type="radio" name="rating_box" value="4">4<br>
+    <input type="radio" name="rating_box" value="5">5<br>    
+    <input type="submit" value="Submit your rating!">
+</form>
+<a href="/update_rating/?{{movie.name}}"></a>
+
+
+{% for r in movie.ratings %}
+   {{r.user.zipcode}} : {{r.rating}}<br>
+{% endfor %}
+
+{% endblock %}

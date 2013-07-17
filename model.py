@@ -3,16 +3,20 @@ from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, backref
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 import datetime
 
-ENGINE = None
-Session = None
+engine = create_engine("sqlite:///ratings.db", echo=False)
+session = scoped_session(sessionmaker(bind=engine, 
+                                    autocommit = False, 
+                                    autoflush = False))
 
 Base = declarative_base()
+Base.query = session.query_property()
 
 ### Class declarations go here
+
 class User(Base):
     __tablename__ = "users"
 
@@ -22,11 +26,6 @@ class User(Base):
     age = Column(Integer, nullable=True)
     zipcode = Column(String(15), nullable=True)
 
-    # def __init__(self, email=None, password=None, age=None, zipcode=None):
-    #     self.email = email
-    #     self.password = password
-    #     self.age = age
-    #     self.zipcode = zipcode
 
 class Movie(Base):
     __tablename__ = "movies"
@@ -36,35 +35,48 @@ class Movie(Base):
     released_at = Column(DateTime, nullable=True)
     imdb_url = Column(String(128), nullable=True)
 
-    # def __init__(self, name=None, released_at=None, imdb_url=None):
-    #     self.name = name
-    #     self.released_at = released_at
-    #     self.imdb_url = imdb_url
+    def get_avg_rating(self):
+        rating_sum = 0.0
+        num = 0
+        for r in self.ratings:
+            rating_sum += r.rating
+            num += 1
+        if num == 0:
+            return "No ratings yet for this movie."
+        return rating_sum/num
+
 
 class Rating(Base):
     __tablename__ = "ratings"
 
     id = Column(Integer, primary_key=True)
-    movie_id = Column(Integer)
+    movie_id = Column(Integer, ForeignKey('movies.id'))
     user_id = Column(Integer, ForeignKey('users.id'))
     rating = Column(Integer)
 
-    user = relationship("User", backref=backref("ratings", order_by=id))
+    user = relationship("User", backref=backref("ratings", order_by=rating.desc()))
+    movie = relationship("Movie", backref=backref("ratings", order_by=rating.desc())) 
 
-    # def __init__(self, movie_id=None, user_id=None, rating=None):
-    #     self.movie_id = movie_id
-    #     self.user_id = user_id
-    #     self.rating = rating
 
 ### End class declarations
-def connect():
-    global ENGINE
-    global Session
 
-    ENGINE = create_engine("sqlite:///ratings.db", echo=True)
-    Session = sessionmaker(bind=ENGINE)
+def add_new_rating(user_id, movie_id, rating):
+    r = Rating(movie_id=movie_id, rating=rating, user_id=user_id)
+    session.add(r)
+    session.commit()
 
-    return Session()
+
+def add_new_user(email, pw, age=None, zipcode=None):
+    u = User(email=email, password=pw, age=age, zipcode=zipcode)
+    session.add(u)
+    session.commit()
+
+def check_login(email, pw):
+    u = session.query(User).filter_by(email=email, password=pw).one()
+    if u:
+        return u.id
+    return None
+
 
 def main():
     """In case we need this for something"""

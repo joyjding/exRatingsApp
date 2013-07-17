@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <title>Judgement</title>
+    </head>
+    <body>
+        <h1>Movie Ratings for Dogs</h1>
+        {% if username %}
+            <p> You are logged in as {{ username }} </p>
+            <form method="POST" action="/logout">
+                <input type="submit" value="Log Out">
+            </form>
+        {% else %}
+            <p> You are not logged in </p>
+            <form method="POST" action="/user">
+                <label>Email</label><input type="text" name="email">
+                <label>Password</label><input type="password" name="password">
+                <input type="submit">
+            </form>
+        {% endif %}
+        {% if wrong_password==True%}
+            <p>Wrong Password. Try again :)</p>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </body> 
+</html>

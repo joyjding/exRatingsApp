@@ -23,6 +23,7 @@ def load_movies(session):
             if row[2]=="":
                 make_date_time = None
             else:
+                # TODO: make the below 2 lines be one line w/ datetime.strptime
                 make_struct=time.strptime(row[2], "%d-%b-%Y")
                 make_date_time = datetime(*make_struct[:6])
             new_movie = model.Movie(id=row[0], name=row[1].decode("latin-1"), released_at=make_date_time, imdb_url= row[4] )

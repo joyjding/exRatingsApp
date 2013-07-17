@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+    
+{% for movie in movies %}
+<h3> <a href="/movies/{{ movie.name}}"> {{movie.name}}</a></h3>
+{% endfor %}
+{% endblock %}
