@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm import sessionmaker, scoped_session
+import correlation
 
 import datetime
 
@@ -26,6 +27,22 @@ class User(Base):
     age = Column(Integer, nullable=True)
     zipcode = Column(String(15), nullable=True)
 
+
+    #returns pearson correlation
+    def similarity(self, other_user):
+        pairs = []
+        user_dict = {}
+        for r in self.ratings:
+            user_dict[r.movie_id] = r.rating
+        for r in other_user.ratings:
+            if user_dict.get(r.movie_id):
+                pairs.append((user_dict[r.movie_id], r.rating))
+        if pairs:
+            return correlation.pearson(pairs)
+        else:
+            return 0.0
+    #takes in a list of other_user objects, returns top pair (sim, other_user)
+     
 
 class Movie(Base):
     __tablename__ = "movies"
@@ -73,7 +90,6 @@ def add_new_rating(user_id, movie_id, rating):
     if r:
         r.rating = rating
         session.commit()
-        print "ALREADY HAVE A RATING\n\n"
         return
     # create new rating if user has not rated the movie
     r = Rating(movie_id=movie_id, rating=rating, user_id=user_id)
@@ -91,7 +107,6 @@ def check_login(email, pw):
     if u:
         return u.id
     return None
-
 
 def main():
     """In case we need this for something"""
