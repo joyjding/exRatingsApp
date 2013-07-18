@@ -41,8 +41,27 @@ class User(Base):
             return correlation.pearson(pairs)
         else:
             return 0.0
-    #takes in a list of other_user objects, returns top pair (sim, other_user)
-     
+    
+    #take a single user and predict what the user would rate the movie
+    #1) get the movie object?
+    #2) get all the users that also rated that movie
+    #3) compare all the users to the first user using similarity
+    #4) sort that list
+    #5) return the most similar user * similarity coefficient
+    #*) check for most similar/least similar
+    
+    def predict_rating(self, movie_id):
+        movie = session.query(Movie).get(movie_id)
+        rating_list = session.query(Rating).filter_by(movie_id=movie_id).all() #rating objects for movie_id
+        sim_list = []
+        for r in rating_list:
+            if r.user!=self:
+                sim = self.similarity(r.user)
+                t = (sim, r.rating)
+                sim_list.append(t)
+        sim_list.sort()
+        most_sim = sim_list[-1]
+        return most_sim[0] * most_sim[1]
 
 class Movie(Base):
     __tablename__ = "movies"
@@ -105,7 +124,7 @@ def add_new_user(email, pw, age=None, zipcode=None):
 def check_login(email, pw):
     u = session.query(User).filter_by(email=email, password=pw).first()
     if u:
-        return u.id
+        return u
     return None
 
 def main():

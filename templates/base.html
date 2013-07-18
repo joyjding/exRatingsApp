@@ -25,17 +25,18 @@
             <ul class="nav">
               <li class="active"><a href="/movies">Movies</a></li>
               <li><a href="/user">Critics</a></li>
-              {% if username %}
-                <li><a href="/user?user_id={{username}}">My Movies</a></li>
+              {% if g.user %}
+                <li><a href="/user?user_id={{g.user.id}}">My Movies</a></li>
               {% endif %}
             </ul>
-            {% if username %}
+            <!--Login/logout fields -->
+            {% if g.user %}
             <form method="POST" action="/logout" class="navbar-form pull-right">
-                <a href="/user?user_id={{username}}">You are logged in as {{ username }}</a>
+                <a href="/user?user_id={{g.user.id}}">You are logged in as {{ g.user.email }}</a>
                 <button type="submit" class="btn">Log Out</button>
             </form>
             {% else %}
-            <form class="navbar-form pull-right" action="/user" method="POST">
+            <form class="navbar-form pull-right" action="/login" method="POST">
                 {% if wrong_password==True%}
                     <div style="color:red">Wrong Password. Try again :)</div>
                 {% endif %}
