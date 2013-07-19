@@ -1,14 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h3><label>Sign up to rate movies</label></h3>
-    <form method="POST" action="/new_user">
-        <label>Email</label><input type="text" name="email"> <br>
-        <label>Password</label><input type="text" name="password"> <br>
-        <label>Age</label><input type="text" name="age"> <br>
-        <label>Zip Code</label><input type="text" name="zipcode"> <br>
-        <input type="submit">
-    </form>
+
 {% for user in users %}
 <h2><a href="/user?user_id={{user.id}}"> User {{ user.id }}</a>, age {{ user.age }} has {{ user.ratings | length}} ratings </h2>
 {% endfor %}

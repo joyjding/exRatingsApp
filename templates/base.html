@@ -29,6 +29,7 @@
                 <li><a href="/user?user_id={{g.user.id}}">My Movies</a></li>
               {% endif %}
             </ul>
+
             <!--Login/logout fields -->
             {% if g.user %}
             <form method="POST" action="/logout" class="navbar-form pull-right">
@@ -36,6 +37,8 @@
                 <button type="submit" class="btn">Log Out</button>
             </form>
             {% else %}
+            <a href="{{url_for('new_user')}}" class="navbar-form pull-right btn btn-primary">Sign Up</a>
+
             <form class="navbar-form pull-right" action="/login" method="POST">
                 {% if wrong_password==True%}
                     <div style="color:red">Wrong Password. Try again :)</div>
@@ -44,7 +47,9 @@
               <input class="span2" type="password" placeholder="Password" name="password">
               <button type="submit" class="btn">Sign in</button>
             </form>
+
             {% endif %}
+
           </div><!--/.nav-collapse -->
         </div>
       </div>
