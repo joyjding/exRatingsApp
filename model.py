@@ -57,7 +57,6 @@ class User(Base):
         sum_coefficients = 0
         for r in movie.ratings:
             if r.user!=self:
-                print "calculating similarity for ", r.id
                 sim = self.similarity(r.user)
                 t = (sim, r.rating)
                 if t[0]>0:

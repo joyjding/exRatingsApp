@@ -3,36 +3,36 @@
 {% block content %}
 <h2>{{ movie.name }}</h2>
 
-{% if user_rating %}
+{% if g.user %}
+    {% if user_rating %}
 
-<h3>Your current rating is {{user_rating.rating}}</h3>
-<h3>The hound of judgement says: {{ g.user.get_judged(movie.id) }} </h3>
-<form method="POST" action="/new_rating">
-    <input type="hidden" name="movie_id" value="{{ movie.id }}">
-    <input type="radio" name="rating_box" value="1">1<br>
-    <input type="radio" name="rating_box" value="2">2<br>
-    <input type="radio" name="rating_box" value="3">3<br>
-    <input type="radio" name="rating_box" value="4">4<br>
-    <input type="radio" name="rating_box" value="5">5<br>
-    <input type="submit" value="Update your rating!">
-</form>
+    <h3>Your current rating is {{user_rating.rating}}</h3>
+    <h3>The hound of judgement says: {{ g.user.get_judged(movie.id) }} </h3>
+    <form method="POST" action="/new_rating">
+        <input type="hidden" name="movie_id" value="{{ movie.id }}">
+        <input type="radio" name="rating_box" value="1">1<br>
+        <input type="radio" name="rating_box" value="2">2<br>
+        <input type="radio" name="rating_box" value="3">3<br>
+        <input type="radio" name="rating_box" value="4">4<br>
+        <input type="radio" name="rating_box" value="5">5<br>
+        <input type="submit" value="Update your rating!">
+    </form>
 
-{% else %}
+    {% else %}
 
-<p>We predict you will rate this movie: {{g.user.predict_rating(movie.id)}}</p>
-<form method="POST" action="/new_rating">
-    <input type="hidden" name="movie_id" value="{{ movie.id }}">
-    <input type="radio" name="rating_box" value="1">1<br>
-    <input type="radio" name="rating_box" value="2">2<br>
-    <input type="radio" name="rating_box" value="3">3<br>
-    <input type="radio" name="rating_box" value="4">4<br>
-    <input type="radio" name="rating_box" value="5">5<br>    
-    <input type="submit" value="Submit your rating!">
-</form>
+    <p>We predict you will rate this movie: {{g.user.predict_rating(movie.id)}}</p>
+    <form method="POST" action="/new_rating">
+        <input type="hidden" name="movie_id" value="{{ movie.id }}">
+        <input type="radio" name="rating_box" value="1">1<br>
+        <input type="radio" name="rating_box" value="2">2<br>
+        <input type="radio" name="rating_box" value="3">3<br>
+        <input type="radio" name="rating_box" value="4">4<br>
+        <input type="radio" name="rating_box" value="5">5<br>    
+        <input type="submit" value="Submit your rating!">
+    </form>
 
+    {% endif %}
 {% endif %}
-
-<h2>Ratings info for this movie</h2>
 
 <h4> Average Rating: {{ movie.get_avg_rating() }}</h4>
 
