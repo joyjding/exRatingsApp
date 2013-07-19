@@ -149,11 +149,13 @@ def add_new_user(email, pw, age=None, zipcode=None):
     session.commit()
     return u
 
+
 def check_login(email, pw):
     u = session.query(User).filter_by(email=email, password=pw).first()
     if u:
         return u
     return None
+
 
 def main():
     """In case we need this for something"""
