@@ -2,6 +2,7 @@ import model
 import csv
 from datetime import datetime
 import time
+import re
 
 def load_users(session):
     filename = "seed_data/u.user"
@@ -26,7 +27,10 @@ def load_movies(session):
                 # TODO: make the below 2 lines be one line w/ datetime.strptime
                 make_struct=time.strptime(row[2], "%d-%b-%Y")
                 make_date_time = datetime(*make_struct[:6])
-            new_movie = model.Movie(id=row[0], name=row[1].decode("latin-1"), released_at=make_date_time, imdb_url= row[4] )
+                match = re.match(r"(.*) \((\d\d\d\d)\).*$", row[1].decode("latin-1"))
+                title = match.group(1)
+                release_year = match.group(2)
+            new_movie = model.Movie(id=row[0], name=title, release_year=release_year, released_at=make_date_time, imdb_url= row[4] )
             session.add(new_movie)
     print "DONE PROCESSING"
     session.commit()
@@ -43,10 +47,10 @@ def load_ratings(session):
 #ctime([secs])
 def main(session):
     # You'll call each of the load_* functions with the session as an argument
-    load_users(session)
-    #load_movies(session)
-    load_ratings(session)
+    #load_users(session)
+    load_movies(session)
+    #load_ratings(session)
 
 if __name__ == "__main__":
-    s= model.connect()
+    #s= model.connect()
     main(s)

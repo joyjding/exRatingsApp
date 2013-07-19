@@ -6,6 +6,7 @@
 {% if user_rating %}
 
 <h3>Your current rating is {{user_rating.rating}}</h3>
+<h3>The hound of judgement says: {{ g.user.get_judged(movie.id) }} </h3>
 <form method="POST" action="/new_rating">
     <input type="hidden" name="movie_id" value="{{ movie.id }}">
     <input type="radio" name="rating_box" value="1">1<br>
@@ -18,6 +19,7 @@
 
 {% else %}
 
+<p>We predict you will rate this movie: {{g.user.predict_rating(movie.id)}}</p>
 <form method="POST" action="/new_rating">
     <input type="hidden" name="movie_id" value="{{ movie.id }}">
     <input type="radio" name="rating_box" value="1">1<br>

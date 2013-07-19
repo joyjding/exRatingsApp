@@ -8,7 +8,7 @@ import correlation
 
 import datetime
 
-engine = create_engine("sqlite:///ratings.db", echo=False)
+engine = create_engine("sqlite:///ratings2.db", echo=False)
 session = scoped_session(sessionmaker(bind=engine, 
                                     autocommit = False, 
                                     autoflush = False))
@@ -52,22 +52,49 @@ class User(Base):
     
     def predict_rating(self, movie_id):
         movie = session.query(Movie).get(movie_id)
-        rating_list = session.query(Rating).filter_by(movie_id=movie_id).all() #rating objects for movie_id
         sim_list = []
-        for r in rating_list:
+        sum_product = 0
+        sum_coefficients = 0
+        for r in movie.ratings:
             if r.user!=self:
+                print "calculating similarity for ", r.id
                 sim = self.similarity(r.user)
                 t = (sim, r.rating)
-                sim_list.append(t)
-        sim_list.sort()
-        most_sim = sim_list[-1]
-        return most_sim[0] * most_sim[1]
+                if t[0]>0:
+                    sum_product+=t[0]*t[1]
+                    sum_coefficients+=t[0]
+                    sim_list.append(t)
+
+        if sum_coefficients == 0:
+            return "You need to rate more movies before we can make a prediction!"
+        else:
+            return sum_product/sum_coefficients
+
+    def get_judged(self, movie_id):
+        the_eye = session.query(User).filter_by(email="thehound@ofjudgement.com").one()
+        eye_rating = session.query(Rating).filter_by(user_id=the_eye.id, movie_id=movie_id).first()
+
+        if not eye_rating:
+            eye_rating = the_eye.predict_rating(movie_id)
+        else:
+            eye_rating = eye_rating.rating
+        user_rating = session.query(Rating).filter_by(user_id=self.id, movie_id=movie_id).one()
+        difference = abs(eye_rating - user_rating.rating)
+
+        messages = ["I suppose you don't have such bad taste after all.",
+                    "I regret every decision that I've ever made that has brought me to listen to your opinion",
+                    "Words fail me, as your taste in movies has clearly failed you.",
+                    "That movie is great. For a clown to watch. Idiot."]
+
+        return messages[int(difference)]
+
 
 class Movie(Base):
     __tablename__ = "movies"
 
     id = Column(Integer, primary_key=True)
     name = Column(String(64))
+    release_year = Column(Integer, nullable=True)
     released_at = Column(DateTime, nullable=True)
     imdb_url = Column(String(128), nullable=True)
 
@@ -105,6 +132,7 @@ class Rating(Base):
 
 def add_new_rating(user_id, movie_id, rating):
     # check if user has rated this movie before
+    print "This is the user_id", user_id
     r = session.query(Rating).filter_by(user_id=user_id, movie_id=movie_id).first()
     if r:
         r.rating = rating

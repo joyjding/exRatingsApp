@@ -73,7 +73,7 @@ def new_user():
 def new_rating():
     rating = request.form['rating_box']
     movie_id = request.form['movie_id']
-    user_id = session.get('f')
+    user_id = g.user.id
     model.add_new_rating(user_id, movie_id, rating)
     return redirect(request.referrer)
 
@@ -91,7 +91,8 @@ def show_movie(movie_name):
         for r in g.user.ratings:
             if r.movie_id == movie.id:
                 user_rating = r
-
+                
+    
     # if user_session:
     #     user = model.session.query(model.User).get(user_session)
     #     for r in user.ratings:
